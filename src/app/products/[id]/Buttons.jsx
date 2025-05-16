@@ -12,6 +12,9 @@ function Buttons({ productId }) {
             bg-yellow-500 text-white
             hover:bg-yellow-700 hover:font-semibold hover:cursor-pointer
             py-3 px-3 rounded-lg"
+        onClick={() => {
+          router.push("/products/edit/" + productId);
+        }}
       >
         Edit
       </button>

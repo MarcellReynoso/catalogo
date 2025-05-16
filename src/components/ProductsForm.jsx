@@ -1,7 +1,7 @@
 "use client";
 import axios from "axios";
-import { useRef, useState } from "react";
-import {useRouter} from 'next/navigation'
+import { useEffect, useRef, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 
 function ProductsForm() {
   const [product, setProduct] = useState({
@@ -12,6 +12,20 @@ function ProductsForm() {
 
   const form = useRef(null);
   const router = useRouter();
+  const params = useParams();
+
+  useEffect(() => {
+    if (params.id) {
+      axios.get("/api/products/" + params.id).then((res) => {
+        console.log(res.data[0]);
+        setProduct({
+          name: res.data[0].name,
+          price: res.data[0].price,
+          description: res.data[0].description,
+        });
+      });
+    }
+  }, []);
 
   const handleChange = (e) => {
     setProduct({
@@ -23,10 +37,18 @@ function ProductsForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(product);
-    const res = await axios.post("/api/products", product);
-    console.log(res);
-    form.current.reset();
-    router.push('/products')
+
+    if (!params.id) {
+      const res = await axios.post("/api/products", product);
+      console.log(res);
+      form.current.reset();
+    } else {
+      const res = await axios.put("/api/products/" + params.id, product)
+      console.log(res);
+      console.log('Editandingggg');
+    }
+    router.refresh();
+    router.push("/products");
   };
 
   return (
@@ -49,6 +71,7 @@ function ProductsForm() {
         autoFocus
         className="shadow bg-white appearance-none border rounded w-full py-2 px-3 mb-3"
         onChange={handleChange}
+        value={product.name}
       />
 
       <label
@@ -64,6 +87,7 @@ function ProductsForm() {
         autoComplete="off"
         className="shadow bg-white appearance-none border rounded w-full py-2 px-3 mb-3"
         onChange={handleChange}
+        value={product.price}
       />
 
       <label
@@ -79,13 +103,14 @@ function ProductsForm() {
         className="shadow bg-white appearance-none border rounded w-full py-2 px-3 mb-3"
         rows={3}
         onChange={handleChange}
+        value={product.description}
       />
 
       <button
         className="bg-blue-500 hover:bg-blue-700 hover:cursor-pointer text-white font-bold py-2 px-4 rounded-lg"
         type="submit"
       >
-        Enviar
+        {params.id ? "Editar producto" : "Crear producto"}
       </button>
     </form>
   );
