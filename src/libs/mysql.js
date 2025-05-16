@@ -1,8 +1,8 @@
 export const mysql = require("serverless-mysql")({
   config: {
-    host: "localhost",
-    database: "catalogo",
-    user: "root",
-    password: "12345",
+    host: process.env.SERVER,
+    database: process.env.DATABASE,
+    user: process.env.USER,
+    password: process.env.PASSWORD,
   },
 });
