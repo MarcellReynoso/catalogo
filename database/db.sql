@@ -4,4 +4,8 @@ CREATE TABLE product(
     description VARCHAR(200),
     price DECIMAL(10,2),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
+);
+
+ALTER TABLE products
+ADD COLUMN image VARCHAR(1000)
+AFTER description;

@@ -1,3 +1,4 @@
+import CreateProduct from "@/components/CreateProduct";
 import ProductCard from "@/components/ProductCard";
 import { mysql } from "@/libs/mysql";
 
@@ -8,13 +9,16 @@ async function loadProducts() {
 
 export default async function page() {
   const products = await loadProducts();
-  console.log(products);
-
   return (
-    <section className="grid gap-4 lg:grid-cols-4">
-      {products.map(product => (
-        <ProductCard product={product} key={product.id} />
-      ))}
+    <section className="">
+      <div className="grid gap-4 lg:grid-cols-4">
+        {products.map((product) => (
+          <ProductCard product={product} key={product.id} />
+        ))}
+      </div>
+      <div className="flex mt-4">
+        <CreateProduct />
+      </div>
     </section>
   );
 }
