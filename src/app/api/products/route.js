@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { mysql } from "@/libs/mysql";
+import {writeFile} from 'fs/promises';
+import path from 'path';
 
 export async function GET() {
   try {
@@ -20,19 +22,40 @@ export async function GET() {
 
 export async function POST(request) {
   try {
-    const { name, description, price } = await request.json();
-    console.log({ name, description, price });
+    const data = await request.formData();
+    const image = data.get("image");
+
+    if (!image) {
+      return NextResponse.json(
+        {
+          message: "La imagen es requerida",
+        },
+        {
+          status: 400,
+        }
+      );  
+    }
+
+    // Guardar la imagen en public
+    const bytes = await image.arrayBuffer();
+    const buffer = Buffer.from(bytes); 
+    const filepath = path.join(process.cwd(), 'public', image.name);
+    await writeFile(filepath, buffer);
+
+    // Guardar el producto en la base de datos
     let results = await mysql.query("INSERT INTO products SET ?", {
-      name,
-      description,
-      price,
+      name: data.get("name"), 
+      description: data.get("description"),
+      price: data.get("price"),
     });
+
     console.log(results);
+
     return NextResponse.json({
       id: results.insertId,
-      name,
-      description,
-      price,
+      name: data.get("name"),
+      description: data.get("description"),
+      price: data.get("price"),
     });
   } catch (error) {
     console.log(error);
